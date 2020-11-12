@@ -14,7 +14,6 @@ class Movie:
     rating = None
     metaScore = None
     plot = None
-    crew = None
     gross = None
 
     def __init__(self):
@@ -26,7 +25,6 @@ class Movie:
         self.rating = []
         self.metaScore = []
         self.plot = []
-        self.crew = []
         self.gross = []
 
     def MovieBlock(self):
@@ -59,9 +57,6 @@ class Movie:
             self.metaScore.append(meta.get_text())
         for plot in mainBlock.find_all('p', class_=""):
             self.plot.append(plot.get_text())
-        for crew in mainBlock.find_all('a', attrs={'href': re.compile('^/name/')}):
-            crew_combine.append(crew.get_text())
-        self.crew.append(crew_combine)
         for gross in mainBlock.find_all('span', attrs={'data-value': re.compile('^[0-9]+[,]')}):
             self.gross.append(gross.get_text())
 
@@ -83,7 +78,6 @@ class Movie:
             'Rating': self.rating,
             'Metascore': self.metaScore,
             'Plot': self.plot,
-            'Crew': self.crew,
             'Market': self.gross
         }
         dataframe = pd.DataFrame.from_dict(movies, orient='index')

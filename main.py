@@ -2,9 +2,10 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import pandas as pd
+import csv
 
 string = "https://www.freshersworld.com/jobs-in-bangalore/9999016065?&limit=50&offset={}"
-offset = {0, 50, 100, 150, 200}
+offset = {0, 50, 100, 150}
 
 
 class Jobs:
@@ -43,16 +44,18 @@ class Jobs:
         for link in block.find_all('a',
                                    attrs={'href': re.compile('^https://'), 'class': re.compile('^view-apply-button')}):
             self.link.append(link.get('href'))
-        self.putDataIntoDatabase()
+        # print(self.companyName)
 
-    def putDataIntoDatabase(self):
+
+class Database(Jobs):
+    def putDataIntoDatabase(self, Jobs):
         jobs = {
-            'Company': self.companyName,
-            'Designation': self.designation,
-            'Qualifications': self.qualification,
-            'Location': self.location,
-            'Last Date to Apply': self.lastDate,
-            'Link': self.link
+            'Company': Jobs.companyName,
+            'Designation': Jobs.designation,
+            'Qualifications': Jobs.qualification,
+            'Location': Jobs.location,
+            'Last Date to Apply': Jobs.lastDate,
+            'Link': Jobs.link
         }
         dataframe = pd.DataFrame.from_dict(jobs, orient='index')
         dataframe = dataframe.transpose()
@@ -60,8 +63,48 @@ class Jobs:
 
 
 job = Jobs()
+data = Database()
 for i in offset:
     url = string.format(i)
     job.getBlocks()
+    data.putDataIntoDatabase(job)
 print("Done!")
 
+print("Search by: ")
+print('1.Company')
+print('2.Designation')
+print('3.Location')
+print('4.Qualification')
+print('5.Exit')
+choice = 0
+while int(choice) != 5:
+    choice = input("Choice: ")
+
+    if(int(choice) == 1):
+        company = input('Enter Company:')
+        with open(r'/home/ananth/WebScrape/Jobs.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if row[1] == company:
+                    print(row)
+    if(int(choice) == 2):
+        designation = input('Enter Designation:')
+        with open(r'/home/ananth/WebScrape/Jobs.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if row[2] == designation:
+                    print(row)
+    if(int(choice) == 3):
+        location = input('Enter Location:')
+        with open(r'/home/ananth/WebScrape/Jobs.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if row[4] == location:
+                    print(row)
+    if(int(choice) == 4):
+        qualification = input('Enter Qualification:')
+        with open(r'/home/ananth/WebScrape/Jobs.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if row[3] == qualification:
+                    print(row)

@@ -5,6 +5,7 @@ import pandas as pd
 
 url = "https://www.imdb.com/list/ls091520106/"
 
+
 class Movie:
     movieName = None
     releaseYear = None
@@ -52,7 +53,7 @@ class Movie:
         for rating in mainBlock.find_all('span', class_="ipl-rating-star__rating"):
             if i % 23 == 0:
                 self.rating.append(rating.get_text())
-            i = i+1
+            i = i + 1
         for meta in mainBlock.find_all('span', class_="metascore"):
             self.metaScore.append(meta.get_text())
         for plot in mainBlock.find_all('p', class_=""):
@@ -64,26 +65,25 @@ class Movie:
             self.movieName.remove(" ")
 
 
-
-        self.pushDatabase()
-
-
-    def pushDatabase(self):
+class PushDatabase(Movie):
+    def pushDatabase(self, Movie):
         movies = {
-            'Title': self.movieName,
-            'Year of Release': self.releaseYear,
-            'Certification': self.certification,
-            'Duration': self.length,
-            'Genre': self.genre,
-            'Rating': self.rating,
-            'Metascore': self.metaScore,
-            'Plot': self.plot,
-            'Market': self.gross
+            'Title': Movie.movieName,
+            'Year of Release': Movie.releaseYear,
+            'Certification': Movie.certification,
+            'Duration': Movie.length,
+            'Genre': Movie.genre,
+            'Rating': Movie.rating,
+            'Metascore': Movie.metaScore,
+            'Plot': Movie.plot,
+            'Market': Movie.gross
         }
         dataframe = pd.DataFrame.from_dict(movies, orient='index')
         dataframe = dataframe.transpose()
-        dataframe.to_csv(r'/home/ananth/WebScrape/Movies.csv', header=True)
+        dataframe.to_csv(r'/home/ananth/PycharmProjects/WebScrape/Movies.csv', header=True)
 
 
 movie = Movie()
+db = PushDatabase()
 movie.MovieBlock()
+db.pushDatabase(movie)
